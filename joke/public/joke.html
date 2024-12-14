@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Joke</title>
+    <link rel="stylesheet" href="joke.css" />
+    <script src="joke.js"></script>
+  </head>
+  <body onload="updateJokeType()">
+    <h3>Jokes</h3>
+    <form name="joke-form">
+      <label for="joke-type">Type:</label>
+      <select onclick="updateJokeType()" id="joke-type">
+        <option value="" selected>any</option>
+      </select>
+    </form>
+    <button onclick="getJoke()">Get Joke</button>
+    <p id="setup"></p>
+    <p id="punchline"></p>
+  </body>
+</html>
