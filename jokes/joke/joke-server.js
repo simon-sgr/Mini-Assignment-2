@@ -2,8 +2,11 @@ const express = require("express");
 const app = express();
 const axios = require("axios");
 const mysql = require("mysql2/promise");
+const path = require("path");
+const cors = require("cors");
+app.use(cors());
 
-require("dotenv").config({ path: ".env" });
+require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 
 const PORT = process.env.JOKE_PORT || 3000;
 const dbConfig = {
@@ -33,11 +36,6 @@ app.get("/joke/:type?", async (req, res) => {
     const type = req.params.type || "any";
     let count = parseInt(req.query.count, 10) || 1;
 
-    // const [rows] = await pool.execute(
-    //   "SELECT j.id, j.setup, j.punchline, t.type FROM joke j INNER JOIN joke_type t ON j.type = t.id WHERE t.type = ? ORDER BY RAND() LIMIT ?",
-    //   [type, count]
-    // );
-
     let query = "";
     let queryParams = [];
     if (type === "any") {
@@ -61,18 +59,18 @@ app.get("/joke/:type?", async (req, res) => {
   }
 });
 
-app.post('/joke', async (req, res) => {
-    try {
-        const { setup, punchline, type } = req.body;
-        const [result] = await pool.execute(
-        "INSERT INTO joke (setup, punchline, type) VALUES (?, ?, ?)",
-        [setup, punchline, type]
-        );
-        res.json({ id: result.insertId });
-    } catch (err) {
-        console.error("Error executing query:", err.message);
-        res.status(500).json({ error: "Internal Server Error" });
-    }
+app.post("/joke", async (req, res) => {
+  try {
+    const { setup, punchline, type } = req.body;
+    const [result] = await pool.execute(
+      "INSERT INTO joke (setup, punchline, type) VALUES (?, ?, ?)",
+      [setup, punchline, type]
+    );
+    res.json({ id: result.insertId });
+  } catch (err) {
+    console.error("Error executing query:", err.message);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));

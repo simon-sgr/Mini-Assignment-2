@@ -1,0 +1,32 @@
+services:
+  joke:
+    image: sschoggler/joke
+    pull_policy: always
+    build: 
+      context: ./joke
+    env_file:
+      - .env
+    restart: always
+    ports:
+      - ${JOKE_CONTAINER_PORT}:${JOKE_PORT}
+    depends_on:
+      mysql:
+        condition: service_healthy
+  mysql:
+    image: mysql
+    container_name: mysql
+    restart: unless-stopped
+    env_file:
+      - .env
+    healthcheck:
+      test: ["CMD-SHELL", "mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'SELECT 1'"]
+      interval: 5s
+      timeout: 1s
+      retries: 5
+    volumes:
+      - mysql-db:/var/lib/mysql
+    ports:
+      - ${MYSQL_CONTAINER_PORT}:${MYSQL_PORT}
+
+volumes:
+  mysql-db:

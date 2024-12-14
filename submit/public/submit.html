@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Submit a Joke</title>
+    <link rel="stylesheet" href="submit.css" />
+    <script src="submit.js" defer></script>
+  </head>
+  <body onload="updateJokeTypes()">
+    <h1>Submit a New Joke</h1>
+    <form id="joke-form" onsubmit="submitJoke(event)">
+      <label for="type-selection">Choose Joke Type:</label>
+      <label class="switch">
+        <input
+          type="checkbox"
+          id="type-selection"
+          onchange="toggleJokeTypeInput()"
+        />
+        <span class="slider round"></span>
+      </label>
+      <span id="type-selection-label">Use Existing</span>
+      <br />
+
+      <div id="existing-type-container">
+        <label for="joke-type">Joke Type:</label>
+        <select id="joke-type" onclick="updateJokeTypes()"></select>
+        <br />
+      </div>
+
+      <div id="new-type-container" style="display: none">
+        <label for="new-joke-type">Add a New Joke Type:</label>
+        <input
+          type="text"
+          id="new-joke-type"
+          placeholder="Enter new joke type"
+        />
+        <br />
+      </div>
+
+      <label for="setup">Joke Setup:</label>
+      <textarea id="setup" placeholder="Enter joke setup" required></textarea>
+      <br />
+
+      <label for="punchline">Joke Punchline:</label>
+      <textarea
+        id="punchline"
+        placeholder="Enter joke punchline"
+        required
+      ></textarea>
+      <br />
+
+      <button type="submit">Submit Joke</button>
+    </form>
+  </body>
+</html>

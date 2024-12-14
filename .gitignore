@@ -1,5 +1,5 @@
-joke/node_modules/
-joke/package-lock.json
+jokes/joke/node_modules/
+jokes/joke/package-lock.json
 submit/node_modules/
 submit/package-lock.json
 .env

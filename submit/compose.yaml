@@ -1,0 +1,11 @@
+services:
+  submit:
+    image: sschoggler/submit
+    pull_policy: always
+    build: 
+      context: .
+    env_file:
+      - .env
+    restart: always
+    ports:
+      - ${SUBMIT_CONTAINER_PORT}:${SUBMIT_PORT}
