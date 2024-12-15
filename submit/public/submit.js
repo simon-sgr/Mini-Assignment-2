@@ -37,6 +37,8 @@ function submitJoke(event) {
     .then((response) => response.json())
     .then((data) => {
       console.log(data);
+      alert("Joke submitted successfully!");
+      location.reload();
     });
 }
 

@@ -5,3 +5,4 @@ submit/package-lock.json
 .env
 .vscode/
 CO3404 Mini Assignment 2.docx
+*.sql

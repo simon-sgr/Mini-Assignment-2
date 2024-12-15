@@ -29,14 +29,20 @@ app.use(express.json());
 app.post("/submit", async (req, res) => {
   try {
     const { setup, punchline, type } = req.body;
+    console.log("Post: ", `http://${JOKE_HOST}:${JOKE_PORT}/joke`);
     console.log("Submitting joke:", setup, punchline, type);
-    const response = await axios.post(`http://${JOKE_HOST}:${JOKE_PORT}/joke`, {
-      setup,
-      punchline,
-      type,
-    });
+    const response = await axios.post(
+      `http://${JOKE_HOST}:${JOKE_PORT}/joke`,
+      {
+        setup,
+        punchline,
+        type,
+      },
+      { headers: { "Content-Type": "application/json" } }
+    );
     res.json(response.data);
   } catch (err) {
+    console.error("Error", err);
     console.error("Error submitting joke:", err.message);
     res.status(500).json({ error: "Internal Server Error" });
   }

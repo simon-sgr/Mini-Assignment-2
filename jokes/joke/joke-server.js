@@ -59,13 +59,23 @@ app.get("/joke/:type?", async (req, res) => {
   }
 });
 
+app.use(express.json());
+
 app.post("/joke", async (req, res) => {
   try {
     const { setup, punchline, type } = req.body;
-    const [result] = await pool.execute(
-      "INSERT INTO joke (setup, punchline, type) VALUES (?, ?, ?)",
-      [setup, punchline, type]
+
+    const [rows] = await pool.execute(
+      `SELECT id FROM joke_type WHERE type = '${type}'`
     );
+    if (rows.length === 0) {
+      await pool.execute(`INSERT INTO joke_type (type) VALUES ('${type}')`);
+    }
+
+    const [result] = await pool.execute(
+      `INSERT INTO joke (setup, punchline, type) VALUES ('${setup}', '${punchline}', (SELECT id FROM joke_type WHERE type = '${type}'))`
+    );
+
     res.json({ id: result.insertId });
   } catch (err) {
     console.error("Error executing query:", err.message);
