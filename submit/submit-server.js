@@ -3,6 +3,7 @@ const app = express();
 const axios = require("axios");
 const path = require("path");
 const cors = require("cors");
+const fs = require("fs");
 app.use(cors());
 
 require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
@@ -10,6 +11,25 @@ require("dotenv").config({ path: path.resolve(__dirname, "../.env") });
 const PORT = process.env.SUBMIT_PORT || 3200;
 const JOKE_PORT = process.env.JOKE_CONTAINER_PORT || 3000;
 const JOKE_HOST = process.env.JOKE_HOST || "localhost";
+const BACKUP_DIR = path.join(__dirname, "backup");
+const BACKUP_FILE_PATH = path.join(__dirname, "backup", "backupTypes.json");
+
+if (!fs.existsSync(BACKUP_DIR)) {
+  fs.mkdirSync(BACKUP_DIR);
+}
+
+if (!fs.existsSync(BACKUP_FILE_PATH)) {
+  fs.writeFileSync(BACKUP_FILE_PATH, JSON.stringify({ types: [] }), "utf-8");
+}
+
+function updateBackupFile(data) {
+  try {
+    fs.writeFileSync(BACKUP_FILE_PATH, JSON.stringify(data), "utf-8");
+    console.log("Backup file updated successfully.");
+  } catch (error) {
+    console.error("Failed to update backup file:", error.message);
+  }
+}
 
 app.use(express.static(__dirname + "/public", { index: "submit.html" }));
 
@@ -17,10 +37,23 @@ app.get("/types", async (req, res) => {
   try {
     console.log(`http://${JOKE_HOST}:${JOKE_PORT}/types`);
     const response = await axios.get(`http://${JOKE_HOST}:${JOKE_PORT}/types`);
+
+    updateBackupFile(response.data);
+
     res.json(response.data);
   } catch (err) {
-    console.error("Error getting types:", err.message);
-    res.status(500).json({ error: "Internal Server Error", err: err });
+    console.log("Try to load backup");
+
+    try {
+      const backupData = fs.readFileSync(BACKUP_FILE_PATH, "utf-8");
+      const types = JSON.parse(backupData);
+      res.json(types);
+    } catch (fsError) {
+      console.error("Failed to load backup:", fsError.message);
+      res.status(500).json({
+        message: "Could not fetch joke types. Please try again later.",
+      });
+    }
   }
 });
 
@@ -41,10 +74,11 @@ app.post("/submit", async (req, res) => {
       { headers: { "Content-Type": "application/json" } }
     );
     res.json(response.data);
-  } catch (err) {
-    console.error("Error", err);
-    console.error("Error submitting joke:", err.message);
-    res.status(500).json({ error: "Internal Server Error" });
+  } catch (error) {
+    console.error("Failed to submit joke:", error.message);
+    res
+      .status(503)
+      .json({ message: "Joke submission failed. Please try again later." });
   }
 });
 

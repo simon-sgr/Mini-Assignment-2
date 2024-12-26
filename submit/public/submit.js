@@ -34,11 +34,27 @@ function submitJoke(event) {
     },
     body: JSON.stringify({ setup, punchline, type: jokeType }),
   })
-    .then((response) => response.json())
+    .then((response) => {
+      if (!response.ok) {
+        if (response.status === 503) {
+          throw new Error("Service unavailable");
+        }
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
+      }
+      return response.json();
+    })
     .then((data) => {
       console.log(data);
       alert("Joke submitted successfully!");
       location.reload();
+    })
+    .catch((error) => {
+      console.error("Failed to submit joke:", error.message);
+      if (error.message === "Service unavailable") {
+        alert("Failed to submit joke. Please try again later.");
+      } else {
+        alert("An unexpected error occurred. Please try again.");
+      }
     });
 }
 

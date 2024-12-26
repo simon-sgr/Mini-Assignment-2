@@ -9,3 +9,9 @@ services:
     restart: always
     ports:
       - ${SUBMIT_CONTAINER_PORT}:${SUBMIT_PORT}
+    
+    volumes:
+      - joke_backup:/app/backup
+
+volumes:
+  joke_backup:

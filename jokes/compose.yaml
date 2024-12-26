@@ -20,8 +20,8 @@ services:
       - .env
     healthcheck:
       test: ["CMD-SHELL", "mysql -u$MYSQL_USER -p$MYSQL_PASSWORD -e 'SELECT 1'"]
-      interval: 5s
-      timeout: 1s
+      interval: 10s
+      timeout: 2s
       retries: 5
     volumes:
       - mysql-db:/var/lib/mysql
